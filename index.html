@@ -26,23 +26,48 @@
 
 
         <!-- Filter Controls -->
-        <div id="filter-controls" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+
+        <div id="filter-controls" class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+            <div>
+                <label for="sort-by" class="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
+                <select id="sort-by" class="w-full p-2 border border-gray-300 rounded focus:outline-none">
+                    <option value="">None</option>
+                    <option value="title">Title</option>
+                    <option value="author">Author</option>
+                    <option value="genre">Genre</option>
+                </select>
+            </div>
             <div>
                 <label for="filter-title" class="block text-sm font-medium text-gray-700 mb-1">Filter by Title</label>
-                <input type="text" id="filter-title" placeholder="Title"
-                    class="w-full p-2 border border-gray-300 rounded focus:outline-none" />
+                <div class="relative">
+                    <input type="text" id="filter-title" placeholder="Title"
+                        class="w-full p-2 pr-8 border border-gray-300 rounded focus:outline-none" />
+                    <button type="button" aria-label="Clear filter by title"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
+                        onclick="clearFilterSearch('filter-title')">×</button>
+                </div>
             </div>
             <div>
                 <label for="filter-author" class="block text-sm font-medium text-gray-700 mb-1">Filter by Author</label>
-                <input type="text" id="filter-author" placeholder="Author"
-                    class="w-full p-2 border border-gray-300 rounded focus:outline-none" />
+                <div class="relative">
+                    <input type="text" id="filter-author" placeholder="Author"
+                        class="w-full p-2 border border-gray-300 rounded focus:outline-none" />
+                    <button type="button" aria-label="Clear filter by author"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
+                        onclick="clearFilterSearch('filter-author')">×</button>
+                </div>
             </div>
             <div>
                 <label for="filter-genre" class="block text-sm font-medium text-gray-700 mb-1">Filter by Genre</label>
-                <input type="text" id="filter-genre" placeholder="Genre"
-                    class="w-full p-2 border border-gray-300 rounded focus:outline-none" />
+                <div class="relative">
+                    <input type="text" id="filter-genre" placeholder="Genre"
+                        class="w-full p-2 border border-gray-300 rounded focus:outline-none" />
+                    <button type="button" aria-label="Clear filter by genre"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
+                        onclick="clearFilterSearch('filter-genre')">×</button>
+                </div>
             </div>
-            </div>
+        </div>
 
 
         <!-- Results box thing for the books -->
