@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('search-form');
     const input = document.getElementById('search-input');
     const resultsContainer = document.getElementById('results');
+    const sortBy = document.getElementById('sort-by');
     const filterTitle = document.getElementById('filter-title');
     const filterAuthor = document.getElementById('filter-author');
     const filterGenre = document.getElementById('filter-genre');
@@ -13,6 +14,33 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const query = input.value.trim();
+        const titleFilterValue = filterTitle.value.trim();
+        const authorFilterValue = filterAuthor.value.trim();
+        const genreFilterValue = filterGenre.value.trim();
+
+        const errors = [];
+
+        if (query.length < 2) {
+            errors.push("Seach must be at least 2 characters.");
+        }
+
+        if (titleFilterValue && titleFilterValue.length < 2) {
+            errors.push("Title filter must be at least 2 charaters.");
+        }
+
+        if (authorFilterValue && authorFilterValue.length < 2) {
+            errors.push("Author filter must be at least 2 characters.");
+        }
+
+        if (genreFilterValue && !/^[a-zA-Z\s]+$/.test(genreFilterValue)) {
+            errors.push("Genre filter must contain only letters.");
+        }
+
+        if (errors.length > 0) {
+            alert(errors.join("\n"));
+            return;
+        }
+
         if (!query) return;
 
         resultsContainer.innerHTML = '<p class="col-span-2 text-center">Loading...</p>';
@@ -38,11 +66,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 return matchesTitle && matchesAuthor && matchesGenre;
             });
 
+            // Apply sorting
+            const sortValue = sortBy.value;
+            if (sortValue) {
+                items.sort((a, b) => {
+                    const infoA = a.volumeInfo;
+                    const infoB = b.volumeInfo;
+
+                    const getValue = (info, key) => {
+                        if (key === 'title') return info.title || '';
+                        if (key === 'author') return (info.authors || [''])[0];
+                        if (key === 'genre') return (info.categories || [''])[0];
+                        return '';
+                    };
+
+                    const valA = getValue(infoA, sortValue).toLowerCase();
+                    const valB = getValue(infoB, sortValue).toLowerCase();
+
+                    return valA.localeCompare(valB);
+                });
+            }
+
             renderBooks(items);
         } catch (err) {
             resultsContainer.innerHTML = `<p class="col-span-2 text-center text-red-600">Error: ${err.message}</p>`;
         }
     });
+
+    function clearFilterSearch(id) {
+        const input = document.getElementById(id);
+        if (input) {
+            input.value = '';             // Clear the input's text
+            document.getElementById('search-form').dispatchEvent(new Event('submit'));
+        }
+    }
+
+
 
     function renderBooks(items) {
         resultsContainer.innerHTML = '';
