@@ -24,14 +24,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body
-    class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 min-h-screen flex flex-col items-center p-6 sm:p-10 font-inter">
+<body class="min-h-screen flex flex-col items-center p-6 sm:p-10 font-inter">
+
 
     <!-- Header -->
     <header class="w-full max-w-4xl mb-10 flex justify-between items-center">
-        <h1 class="text-4xl font-bold text-gray-800 dark:text-gray-100">📚 Book Searcher</h1>
-        <button id="dark-toggle"
-            class="text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 shadow-sm border border-gray-300 dark:border-gray-600 transition">
+        <h1 class="text-4xl font-bold text-[#F5F3E7]">📚 Book Searcher</h1>
+        <button id="dark-toggle" class="text-sm font-medium px-4 py-2 rounded-md shadow-sm border transition">
             Toggle Dark Mode
         </button>
     </header>
@@ -42,9 +41,9 @@
         <!-- Search Form -->
         <form id="search-form" class="flex mb-6">
             <input type="text" id="search-input" placeholder="Search by title, author, or ISBN"
-                class="flex-grow p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 transition" />
+                class="flex-grow p-3 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#C8B06E] bg-white text-sm" />
             <button type="submit" id="search-btn"
-                class="bg-indigo-600 text-white px-6 py-2 text-sm rounded-r-lg hover:bg-indigo-700 transition">
+                class="bg-[#8C5E3C] text-white px-6 py-2 text-sm rounded-r-lg hover:bg-[#C8B06E] transition">
                 Search
             </button>
         </form>
@@ -56,7 +55,7 @@
                 <label for="sort-by" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Sort
                     By</label>
                 <select id="sort-by"
-                    class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-sm focus:ring-2 focus:ring-indigo-400">
+                    class="w-full p-2 rounded-md text-sm focus:ring-2 focus:ring-[#C8B06E] border border-[#C8B06E] bg-[#F5F3E7] text-[#1B2A41]">
                     <option value="">None</option>
                     <option value="title">Title</option>
                     <option value="author">Author</option>
