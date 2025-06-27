@@ -1,51 +1,76 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
+:root {
+    --color-navy: #1B2A41;
+    --color-beige: #F5F3E7;
+    --color-brown: #8C5E3C;
+    --color-gold: #C8B06E;
+    --color-white: #FFFFFF;
+}
+
 body {
     font-family: 'Inter', sans-serif;
+    background-color: var(--color-navy);
+    color: var(--color-beige);
 }
 
-/* Smooth transition for interactive elements */
-button,
+/* Input fields, cards, dropdowns */
 input,
-select {
-    transition: all 0.2s ease-in-out;
-}
-
-/* Customize focus styles */
-input:focus,
-select:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4);
-    /* Indigo ring */
-}
-
-/* Hover effect for cards */
+select,
 .book-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: var(--color-beige);
+    color: var(--color-navy);
+    border: 1px solid var(--color-gold);
 }
 
-.book-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+/* Buttons */
+#search-btn {
+    background-color: var(--color-brown);
+    color: var(--color-white);
+    border: none;
 }
 
-/* Optional: animated fade-in for book results */
-.fade-in {
-    animation: fadeIn 0.4s ease-out;
+#search-btn:hover {
+    background-color: var(--color-gold);
+    color: var(--color-navy);
 }
 
 #dark-toggle {
     cursor: pointer;
+    background-color: var(--color-brown);
+    color: var(--color-white);
+    border: none;
+    transition: background-color 0.2s ease-in-out;
 }
 
 #dark-toggle:hover {
-    opacity: 0.9;
+    background-color: var(--color-gold);
+    color: var(--color-navy);
 }
 
-@media (prefers-color-scheme: dark) {
-    #dark-toggle {
-        background-color: #4b5563;
-    }
+/* Card hover */
+.book-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 14px rgba(255, 255, 255, 0.1);
+}
+
+/* Focus styles */
+input:focus,
+select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(200, 176, 110, 0.4);
+    /* gold ring */
+}
+
+/* Fade-in animation */
+.fade-in {
+    animation: fadeIn 0.4s ease-out;
 }
 
 @keyframes fadeIn {
@@ -60,26 +85,22 @@ select:focus {
     }
 }
 
-/* Optional dark mode support */
+/* Optional dark mode override */
 @media (prefers-color-scheme: dark) {
     body {
-        background-color: #1f2937;
-        /* Tailwind gray-800 */
-        color: #f3f4f6;
-        /* Tailwind gray-100 */
+        background-color: var(--color-navy);
+        color: var(--color-beige);
     }
 
     input,
     select {
-        background-color: #374151;
-        /* gray-700 */
-        color: white;
-        border-color: #4b5563;
-        /* gray-600 */
+        background-color: var(--color-beige);
+        color: var(--color-navy);
+        border-color: var(--color-gold);
     }
 
     .book-card {
-        background-color: #1f2937;
-        border-color: #374151;
+        background-color: var(--color-beige);
+        border-color: var(--color-gold);
     }
 }
