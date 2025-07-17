@@ -5,7 +5,7 @@ let currentPage = 1;
 let totalItems = 0;
 let currentItems = [];
 
-export function initApp() {
+function initApp() {
   initDarkMode();
   loadStateFromURL();
   loadPersistedQuery();
@@ -260,3 +260,56 @@ function removePagination() {
   const old = document.getElementById('pager');
   if (old) old.remove();
 }
+
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - Book Searcher</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { inter: ['Inter','sans-serif'] } } } };
+  </script>
+  <link href="main.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-[#1B2A41] text-[#F5F3E7] font-inter p-8">
+
+  <header class="mb-8 flex justify-between items-center">
+    <h1 class="text-3xl font-bold">📚 Book Searcher</h1>
+    <nav>
+      <a href="index.html" class="text-sm hover:underline">Home</a>
+    </nav>
+  </header>
+
+  <main class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow fade-in">
+    <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Contact Us</h2>
+    <form id="contact-form" novalidate class="space-y-4">
+      <div>
+        <label for="contact-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name<span class="text-red-500">*</span></label>
+        <input type="text" id="contact-name" required aria-required="true"
+          class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#C8B06E] bg-[#F5F3E7] text-[#1B2A41]" />
+        <p id="error-name" class="mt-1 text-red-600 text-sm hidden">Please enter your name.</p>
+      </div>
+      <div>
+        <label for="contact-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email<span class="text-red-500">*</span></label>
+        <input type="email" id="contact-email" required aria-required="true"
+          class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#C8B06E] bg-[#F5F3E7] text-[#1B2A41]" />
+        <p id="error-email" class="mt-1 text-red-600 text-sm hidden">Please enter a valid email address.</p>
+      </div>
+      <div>
+        <label for="contact-message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message<span class="text-red-500">*</span></label>
+        <textarea id="contact-message" rows="4" required aria-required="true" minlength="10"
+          class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#C8B06E] bg-[#F5F3E7] text-[#1B2A41]"></textarea>
+        <p id="error-message" class="mt-1 text-red-600 text-sm hidden">Message must be at least 10 characters.</p>
+      </div>
+      <button type="submit" id="contact-submit"
+        class="bg-[#8C5E3C] text-white px-4 py-2 rounded hover:bg-[#C8B06E] transition">Send Message</button>
+    </form>
+  </main>
+
+  <script type="module" src="contact.js"></script>
+</body>
+</html>
