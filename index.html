@@ -30,102 +30,92 @@
     <!-- Header -->
     <header class="w-full max-w-4xl mb-10 flex justify-between items-center">
         <h1 class="text-4xl font-bold text-[#F5F3E7]">📚 Book Searcher</h1>
-        <button id="dark-toggle" class="text-sm font-medium px-4 py-2 rounded-md shadow-sm border transition">
-            Toggle Dark Mode
-        </button>
+        <nav class="space-x-4">
+            <a href="index.html" class="text-sm hover:underline">Home</a>
+            <a href="contact.html" class="text-sm hover:underline">Contact Us</a>   
+            <button id="dark-toggle" class="text-sm font-medium px-4 py-2 rounded-md shadow-sm border transition" aria-pressed="false" >Toggle Dark Mode</button>
+        </nav>
     </header>
 
     <!-- Main -->
     <main class="w-full max-w-4xl">
 
-        <!-- Search Form -->
-        <form id="search-form" class="flex mb-6">
-            <input type="text" id="search-input" placeholder="Search by title, author, or ISBN"
-                class="flex-grow p-3 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#C8B06E] bg-white text-sm" />
-            <button type="submit" id="search-btn"
-                class="bg-[#8C5E3C] text-white px-6 py-2 text-sm rounded-r-lg hover:bg-[#C8B06E] transition">
-                Search
-            </button>
-        </form>
+            <!-- Search Form -->
+    <form id="search-form" class="flex mb-6" novalidate>
+      <input
+        type="search"
+        id="search-input"
+        placeholder="Search by title, author, or ISBN"
+        aria-label="Search books"
+        required
+        class="flex-grow p-3 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#C8B06E] bg-white text-sm"
+      />
+      <button
+        type="submit"
+        id="search-btn"
+        class="bg-[#8C5E3C] text-white px-6 py-2 text-sm rounded-r-lg hover:bg-[#C8B06E] transition"
+      >
+        Search
+      </button>
+      <button type="button" id="clear-search" class="ml-2 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Clear All</button>
+    </form>
 
-        <!-- Filter Controls -->
-        <div id="filter-controls"
-            class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow transition-all duration-300">
-            <div>
-                <label for="sort-by" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Sort
-                    By</label>
-                <select id="sort-by"
-                    class="w-full p-2 rounded-md text-sm focus:ring-2 focus:ring-[#C8B06E] border border-[#C8B06E] bg-[#F5F3E7] text-[#1B2A41]">
-                    <option value="">None</option>
-                    <option value="title">Title</option>
-                    <option value="author">Author</option>
-                    <option value="genre">Genre</option>
-                </select>
-            </div>
-            <div>
-                <label for="filter-title"
-                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Filter by
-                    Title</label>
-                <div class="relative">
-                    <input type="text" id="filter-title" placeholder="Title"
-                        class="w-full p-2 pr-8 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-sm" />
-                    <button type="button" aria-label="Clear filter by title"
-                        class="clear-btn absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
-                        data-clear="filter-title">×</button>
-                </div>
-            </div>
-
-            <!-- Filter Author -->
-            <div>
-                <label for="filter-author"
-                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Filter by
-                    Author</label>
-                <div class="relative">
-                    <input type="text" id="filter-author" placeholder="Author"
-                        class="w-full p-2 pr-8 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-sm" />
-                    <button type="button" aria-label="Clear filter by author"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
-                        onclick="clearFilterSearch('filter-author')">×</button>
-                </div>
-            </div>
-
-            <!-- Filter Genre -->
-            <div>
-                <label for="filter-genre"
-                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Filter by
-                    Genre</label>
-                <div class="relative">
-                    <input type="text" id="filter-genre" placeholder="Genre"
-                        class="w-full p-2 pr-8 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-sm" />
-                    <button type="button" aria-label="Clear filter by genre"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
-                        onclick="clearFilterSearch('filter-genre')">×</button>
-                </div>
-            </div>
+    <!-- Filter & Sort -->
+    <div id="filter-controls" class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow fade-in">
+      <!-- Sort By -->
+      <div>
+        <label for="sort-by" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Sort By</label>
+        <select id="sort-by" aria-label="Sort books"
+          class="w-full p-2 rounded-md text-sm focus:ring-2 focus:ring-[#C8B06E] border border-[#C8B06E] bg-[#F5F3E7] text-[#1B2A41]">
+          <option value="">None</option>
+          <option value="title">Title</option>
+          <option value="author">Author</option>
+          <option value="genre">Genre</option>
+        </select>
+      </div>
+      <!-- Title Filter -->
+      <div>
+        <label for="filter-title" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Filter by Title</label>
+        <div class="relative">
+          <input id="filter-title" type="text" placeholder="Title"
+            class="w-full p-2 pr-8 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-sm focus:ring-2 focus:ring-[#C8B06E]" />
+          <button type="button" data-clear="filter-title"
+            class="clear-btn absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm">×</button>
         </div>
-
-        <!-- Results Section -->
-        <div id="results" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div id="loading-spinner" class="hidden col-span-2 flex flex-col items-center">
-                <div
-                    class="animate-spin rounded-full h-10 w-10 border-t-4 border-indigo-500 border-opacity-75 border-b-4">
-                </div>
-                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Loading...</p>
-            </div>
+      </div>
+      <!-- Author Filter -->
+      <div>
+        <label for="filter-author" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Filter by Author</label>
+        <div class="relative">
+          <input id="filter-author" type="text" placeholder="Author"
+            class="w-full p-2 pr-8 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-sm focus:ring-2 focus:ring-[#C8B06E]" />
+          <button type="button" data-clear="filter-author"
+            class="clear-btn absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm">×</button>
         </div>
+      </div>
+      <!-- Genre Filter -->
+      <div>
+        <label for="filter-genre" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Filter by Genre</label>
+        <div class="relative">
+          <input id="filter-genre" type="text" placeholder="Genre"
+            class="w-full p-2 pr-8 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-sm focus:ring-2 focus:ring-[#C8B06E]" />
+          <button type="button" data-clear="filter-genre"
+            class="clear-btn absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm">×</button>
+        </div>
+      </div>
+    </div>
 
-        <!-- Results Grid -->
-        <div id="results" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+    <!-- Results Grid -->
+    <div id="results" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
 
-    </main>
+  </main>
 
-    <!-- Footer -->
-    <footer class="mt-12 text-sm text-gray-500 dark:text-gray-400">
-        © 2025 Book Searcher. Powered by Google Books API.
-    </footer>
+  <!-- Footer -->
+  <footer class="mt-12 text-sm text-gray-400 dark:text-gray-500">
+    © 2025 Book Searcher. Powered by Google Books API.
+  </footer>
 
-    <!-- Main JS -->
-    <script src="main.js"></script>
+  <!-- Main JS Module -->
+  <script type="module" src="main.js"></script>
 </body>
-
 </html>
