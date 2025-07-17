@@ -5,182 +5,258 @@ let currentPage = 1;
 let totalItems = 0;
 let currentItems = [];
 
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('search-form');
-    const input = document.getElementById('search-input');
-    const resultsContainer = document.getElementById('results');
-    const filterTitle = document.getElementById('filter-title');
-    const filterAuthor = document.getElementById('filter-author');
-    const filterGenre = document.getElementById('filter-genre');
-    const sortBy = document.getElementById('sort-by');
+export function initApp() {
+  initDarkMode();
+  loadStateFromURL();
+  loadPersistedQuery();
+  attachEventHandlers();
+  if (document.getElementById('search-input').value.trim()) {
+    fetchPage(currentPage);
+  }
+}
 
-    // Create Clear All button
-    const clearBtn = document.createElement('button');
-    clearBtn.type = 'button';
-    clearBtn.textContent = 'Clear All';
-    clearBtn.className = 'px-4 py-2 border rounded mb-4';
-    form.prepend(clearBtn);
+document.addEventListener('DOMContentLoaded', initApp);
 
-    clearBtn.addEventListener('click', () => {
-        input.value = '';
-        filterTitle.value = '';
-        filterAuthor.value = '';
-        filterGenre.value = '';
-        sortBy.value = '';
-        currentPage = 1;
-        totalItems = 0;
-        currentItems = [];
-        resultsContainer.innerHTML = '';
-        removePagination();
-    });
+// Initialize dark/light mode based on localStorage or system
+function initDarkMode() {
+  const toggle = document.getElementById('dark-toggle');
+  const stored = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (stored === 'dark') document.documentElement.classList.add('dark');
+  toggle.setAttribute('aria-pressed', document.documentElement.classList.contains('dark'));
+  toggle.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.toggle('dark');
+    toggle.setAttribute('aria-pressed', isDark);
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+}
 
-    // Individual filter clear buttons
-    document.querySelectorAll('.clear-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = btn.dataset.clear;
-            document.getElementById(id).value = '';
-            renderBooks(sorted(applyFilters(currentItems)));
-        });
-    });
+// Read and apply URL query parameters
+function loadStateFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get('q');
+  if (q) document.getElementById('search-input').value = q;
+  ['title','author','genre'].forEach(key => {
+    const val = params.get(key);
+    if (val) document.getElementById(`filter-${key}`).value = val;
+  });
+  const sort = params.get('sort');
+  if (sort) document.getElementById('sort-by').value = sort;
+  const page = parseInt(params.get('page'), 10);
+  if (page && page > 1) currentPage = page;
+}
 
-    // Live filter and sort
-    [filterTitle, filterAuthor, filterGenre].forEach(el =>
-        el.addEventListener('input', () => renderBooks(sorted(applyFilters(currentItems))))
-    );
-    sortBy.addEventListener('change', () => renderBooks(sorted(applyFilters(currentItems))));
+// Persist last search query to localStorage
+function loadPersistedQuery() {
+  const last = localStorage.getItem('lastQuery');
+  const input = document.getElementById('search-input');
+  if (!input.value.trim() && last) input.value = last;
+}
 
-    // On form submit, fetch first page
-    form.addEventListener('submit', event => {
-        event.preventDefault();
-        const query = input.value.trim();
-        if (!query) return;
-        fetchPage(1);
-    });
-});
+function persistQuery(q) {
+  localStorage.setItem('lastQuery', q);
+}
 
-// Fetch a specific page of books
-async function fetchPage(page) {
-    const query = document.getElementById('search-input').value.trim();
-    if (!query) return;
+// Set up all event handlers
+function attachEventHandlers() {
+  const form = document.getElementById('search-form');
+  const clearAll = document.getElementById('clear-search');
 
-    currentPage = page;
-    const startIndex = (page - 1) * PAGE_SIZE;
-    const url = `${BASE_URL}?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=${PAGE_SIZE}&key=${API_KEY}`;
-    const resultsContainer = document.getElementById('results');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const q = document.getElementById('search-input').value.trim();
+    if (!q) return;
+    persistQuery(q);
+    currentPage = 1;
+    updateURL();
+    fetchPage(currentPage);
+  });
 
-    resultsContainer.innerHTML = '<p class="text-center">Loading...</p>';
+  clearAll.addEventListener('click', () => {
+    document.querySelectorAll('input,select').forEach(el => el.value = '');
+    document.getElementById('results').innerHTML = '';
     removePagination();
+    history.replaceState(null, '', window.location.pathname);
+  });
 
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(response.statusText);
-        const data = await response.json();
+  document.querySelectorAll('.clear-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.clear;
+      document.getElementById(id).value = '';
+      updateURL();
+      renderBooks(sorted(applyFilters(currentItems)));
+    });
+  });
 
-        currentItems = data.items || [];
-        totalItems = data.totalItems || 0;
+  ['filter-title','filter-author','filter-genre'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      updateURL();
+      renderBooks(sorted(applyFilters(currentItems)));
+    });
+  });
 
-        renderBooks(sorted(applyFilters(currentItems)));
-        renderPagination();
-    } catch (error) {
-        resultsContainer.innerHTML = `<p class="text-center text-red-600">Error: ${error.message}</p>`;
-    }
+  document.getElementById('sort-by').addEventListener('change', () => {
+    updateURL();
+    renderBooks(sorted(applyFilters(currentItems)));
+  });
 }
 
-// Apply filters (title, author, genre)
+// Update browser URL without reload
+function updateURL() {
+  const params = new URLSearchParams();
+  const q = document.getElementById('search-input').value.trim();
+  if (q) params.set('q', q);
+  ['title','author','genre'].forEach(key => {
+    const v = document.getElementById(`filter-${key}`).value.trim();
+    if (v) params.set(key, v);
+  });
+  const sort = document.getElementById('sort-by').value;
+  if (sort) params.set('sort', sort);
+  if (currentPage > 1) params.set('page', currentPage);
+  history.replaceState(null, '', `${window.location.pathname}?${params}`);
+}
+
+// Fetch a page of results from Google Books API
+async function fetchPage(page) {
+  const query = document.getElementById('search-input').value.trim();
+  const startIndex = (page - 1) * PAGE_SIZE;
+  const url = `${BASE_URL}?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=${PAGE_SIZE}&key=${API_KEY}`;
+  const resultsContainer = document.getElementById('results');
+  resultsContainer.innerHTML = '<p class="text-center">Loading...</p>';
+  removePagination();
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(res.statusText);
+    const data = await res.json();
+    currentItems = data.items || [];
+    totalItems = data.totalItems || 0;
+    renderBooks(sorted(applyFilters(currentItems)));
+    renderPagination();
+  } catch (err) {
+    resultsContainer.innerHTML = `<p class="text-center text-red-600">Error: ${err.message}</p>`;
+  }
+}
+
+// Filter logic
 function applyFilters(items) {
-    const titleFilter = document.getElementById('filter-title').value.trim().toLowerCase();
-    const authorFilter = document.getElementById('filter-author').value.trim().toLowerCase();
-    const genreFilter = document.getElementById('filter-genre').value.trim().toLowerCase();
-
-    return items.filter(item => {
-        const info = item.volumeInfo || {};
-        const title = (info.title || '').toLowerCase();
-        const authors = (info.authors || []).join(', ').toLowerCase();
-        const categories = (info.categories || []).join(', ').toLowerCase();
-        return (
-            (!titleFilter || title.includes(titleFilter)) &&
-            (!authorFilter || authors.includes(authorFilter)) &&
-            (!genreFilter || categories.includes(genreFilter))
-        );
-    });
+  const t = document.getElementById('filter-title').value.trim().toLowerCase();
+  const a = document.getElementById('filter-author').value.trim().toLowerCase();
+  const g = document.getElementById('filter-genre').value.trim().toLowerCase();
+  return items.filter(item => {
+    const info = item.volumeInfo || {};
+    const title = (info.title || '').toLowerCase();
+    const authors = (info.authors || []).join(', ').toLowerCase();
+    const genres = (info.categories || []).join(', ').toLowerCase();
+    return (!t || title.includes(t)) && (!a || authors.includes(a)) && (!g || genres.includes(g));
+  });
 }
 
-// Sort items based on sortBy select
+// Sort logic
 function sorted(items) {
-    const key = document.getElementById('sort-by').value;
-    if (!key) return items;
-
-    return [...items].sort((a, b) => {
-        const infoA = a.volumeInfo || {};
-        const infoB = b.volumeInfo || {};
-        const valA = (key === 'author')
-            ? (infoA.authors || [''])[0].toLowerCase()
-            : (infoA[key] || '').toLowerCase();
-        const valB = (key === 'author')
-            ? (infoB.authors || [''])[0].toLowerCase()
-            : (infoB[key] || '').toLowerCase();
-        return valA.localeCompare(valB);
-    });
+  const key = document.getElementById('sort-by').value;
+  if (!key) return items;
+  return [...items].sort((a, b) => {
+    const ia = a.volumeInfo || {};
+    const ib = b.volumeInfo || {};
+    const va = key === 'author' ? (ia.authors||[''])[0].toLowerCase() : (ia[key]||'').toLowerCase();
+    const vb = key === 'author' ? (ib.authors||[''])[0].toLowerCase() : (ib[key]||'').toLowerCase();
+    return va.localeCompare(vb);
+  });
 }
 
-// Render book cards
+// Render books to DOM
 function renderBooks(items) {
-    const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = '';
-
-    if (items.length === 0) {
-        resultsContainer.innerHTML = '<p class="text-center">No books found.</p>';
-        return;
-    }
-
-    items.forEach(item => {
-        const info = item.volumeInfo || {};
-        const thumbnail = info.imageLinks?.thumbnail || '';
-        const description = info.description
-            ? info.description.replace(/<[^>]+>/g, '').slice(0, 150) + '…'
-            : 'No description available.';
-
-        const card = document.createElement('div');
-        card.className = 'book-card fade-in';
-        card.innerHTML = `
-      <img src="${thumbnail}" alt="Cover" />
-      <h2>${info.title || 'Untitled'}</h2>
-      <p>${(info.authors || []).join(', ')}</p>
-      <p class="small">${info.publishedDate || ''}</p>
-      <p>${(info.categories || []).join(', ')}</p>
-      <p class="desc">${description}</p>
+  const container = document.getElementById('results');
+  container.innerHTML = '';
+  if (!items.length) {
+    container.innerHTML = '<p class="text-center">No books found.</p>';
+    return;
+  }
+  items.forEach(item => {
+    const info = item.volumeInfo || {};
+    const img = info.imageLinks?.thumbnail || '';
+    const desc = info.description ? info.description.replace(/<[^>]+>/g,'').slice(0,150)+'…' : 'No description available.';
+    const card = document.createElement('div');
+    card.className = 'book-card fade-in';
+    card.innerHTML = `
+      <img src="${img}" alt="Cover" />
+      <h2>${info.title||'Untitled'}</h2>
+      <p>${(info.authors||[]).join(', ')}</p>
+      <p class="small">${info.publishedDate||''}</p>
+      <p>${(info.categories||[]).join(', ')}</p>
+      <p class="desc">${desc}</p>
     `;
-        resultsContainer.appendChild(card);
-    });
+    container.appendChild(card);
+  });
 }
 
-// Render pagination controls
+// Pagination controls (with dropdown selection)
 function renderPagination() {
-    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
-    if (totalPages < 2) return;
+  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+  if (totalPages < 2) return;
+  const resultsContainer = document.getElementById('results');
+  const pager = document.createElement('div');
+  pager.id = 'pager';
+  pager.className = 'mt-4 flex justify-center items-center space-x-4';
 
-    const resultsContainer = document.getElementById('results');
-    const pager = document.createElement('div');
-    pager.id = 'pager';
-    pager.className = 'mt-4 flex justify-center space-x-4';
-    pager.innerHTML = `
-    <button ${currentPage === 1 ? 'disabled' : ''} id="prev">Prev</button>
-    <span>Page ${currentPage} of ${totalPages}</span>
-    <button ${currentPage === totalPages ? 'disabled' : ''} id="next">Next</button>
-  `;
+  // Prev button
+  const prev = document.createElement('button');
+  prev.id = 'prev';
+  prev.textContent = 'Prev';
+  prev.disabled = (currentPage === 1);
+  prev.className = 'px-3 py-1 border rounded';
+  prev.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      updateURL();
+      fetchPage(currentPage);
+    }
+  });
 
-    resultsContainer.after(pager);
+  // Page selector dropdown
+  const select = document.createElement('select');
+  select.id = 'page-select';
+  select.className = 'p-1 border rounded';
+  for (let i = 1; i <= totalPages; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = `Page ${i}`;
+    if (i === currentPage) option.selected = true;
+    select.appendChild(option);
+  }
+  select.addEventListener('change', () => {
+    currentPage = parseInt(select.value, 10);
+    updateURL();
+    fetchPage(currentPage);
+  });
 
-    pager.querySelector('#prev').addEventListener('click', () => {
-        if (currentPage > 1) fetchPage(currentPage - 1);
-    });
-    pager.querySelector('#next').addEventListener('click', () => {
-        if (currentPage < totalPages) fetchPage(currentPage + 1);
-    });
+  // Next button
+  const next = document.createElement('button');
+  next.id = 'next';
+  next.textContent = 'Next';
+  next.disabled = (currentPage === totalPages);
+  next.className = 'px-3 py-1 border rounded';
+  next.addEventListener('click', () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      updateURL();
+      fetchPage(currentPage);
+    }
+  });
+
+  // Assemble
+  pager.appendChild(prev);
+  pager.appendChild(select);
+  pager.appendChild(next);
+  resultsContainer.after(pager);
 }
 
-// Remove existing pagination controls
+// Remove pager
 function removePagination() {
-    const oldPager = document.getElementById('pager');
-    if (oldPager) oldPager.remove();
+  const old = document.getElementById('pager');
+  if (old) old.remove();
+}
+function removePagination() {
+  const old = document.getElementById('pager');
+  if (old) old.remove();
 }
