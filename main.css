@@ -211,7 +211,7 @@ form#search-form {
 
 .book-card img {
   width: 100%;
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 5 / 6;
   object-fit: cover;
   margin-bottom: 0.75rem;
 }
