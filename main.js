@@ -14,7 +14,9 @@ function initApp() {
 
   // If there's a query in the input, perform search
   const q = document.getElementById('search-input').value.trim();
-  if (q) fetchPage(currentPage);
+  if (q) {
+    fetchPage(currentPage);
+  }
 }
 document.addEventListener('DOMContentLoaded', initApp);
 
