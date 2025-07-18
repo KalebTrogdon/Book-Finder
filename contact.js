@@ -1,30 +1,32 @@
-import { getTheme, setTheme } from './storage.js';
-
 document.addEventListener('DOMContentLoaded', () => {
   initNav();
-  initDarkToggle();
+  initDarkMode();
   hydrateForm();
   document.getElementById('contact-form').onsubmit = handleSubmit;
 });
 
+// NAV
 function initNav() {
   document.getElementById('page-nav').onchange = e => {
     window.location.href = e.target.value;
   };
 }
 
-function initDarkToggle() {
-  const stored = getTheme() || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light');
-  if (stored === 'dark') document.documentElement.classList.add('dark');
-  const btn = document.getElementById('dark-toggle');
-  btn.setAttribute('aria-pressed', document.documentElement.classList.contains('dark'));
+// DARK MODE
+function initDarkMode() {
+  const btn    = document.getElementById('dark-toggle');
+  const stored = localStorage.getItem('theme')
+                || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  if (stored==='dark') document.documentElement.classList.add('dark');
+  btn.setAttribute('aria-pressed',document.documentElement.classList.contains('dark'));
   btn.onclick = () => {
-    const now = document.documentElement.classList.toggle('dark');
-    btn.setAttribute('aria-pressed', now);
-    setTheme(now ? 'dark' : 'light');
+    const isDark = document.documentElement.classList.toggle('dark');
+    btn.setAttribute('aria-pressed', isDark);
+    localStorage.setItem('theme', isDark?'dark':'light');
   };
 }
 
+// HYDRATE FORM FROM localStorage
 function hydrateForm() {
   ['name','email','subject','message'].forEach(id => {
     const el = document.getElementById(id);
@@ -33,39 +35,43 @@ function hydrateForm() {
   });
 }
 
+// FORM SUBMIT + VALIDATION
 function handleSubmit(e) {
   e.preventDefault();
-  let ok = true;
+  let valid = true;
 
-  // Name
-  const nameEl = document.getElementById('name');
-  if (nameEl.value.trim().length < 2) {
-    ok = false; toggleError('name', true);
-  } else toggleError('name', false);
+  // Name ≥2 chars
+  const nm = document.getElementById('name');
+  if (nm.value.trim().length<2) {
+    toggleError('name',true); valid=false;
+  } else toggleError('name',false);
 
-  // Email
-  const emailEl = document.getElementById('email');
+  // Email format
+  const em = document.getElementById('email');
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!re.test(emailEl.value)) {
-    ok = false; toggleError('email', true);
-  } else toggleError('email', false);
+  if (!re.test(em.value)) {
+    toggleError('email',true); valid=false;
+  } else toggleError('email',false);
 
-  // Message
-  const msgEl = document.getElementById('message');
-  if (msgEl.value.trim().length < 10) {
-    ok = false; toggleError('message', true);
-  } else toggleError('message', false);
+  // Message ≥10 chars
+  const msg = document.getElementById('message');
+  if (msg.value.trim().length<10) {
+    toggleError('message',true); valid=false;
+  } else toggleError('message',false);
 
-  if (!ok) return;
+  if (!valid) return;
 
-  // Success: clear localStorage, form, show feedback
-  ['name','email','subject','message'].forEach(id => localStorage.removeItem(`contact_${id}`));
+  // Success: clear storage, reset form, show animation
+  ['name','email','subject','message'].forEach(id =>
+    localStorage.removeItem(`contact_${id}`)
+  );
   e.target.reset();
-  const succ = document.getElementById('contact-success');
-  succ.classList.add('opacity-100');
-  setTimeout(() => succ.classList.remove('opacity-100'), 3000);
+  const success = document.getElementById('contact-success');
+  success.classList.add('opacity-100');
+  setTimeout(() => success.classList.remove('opacity-100'), 3000);
 }
 
 function toggleError(field, show) {
-  document.getElementById(`${field}-error`).classList.toggle('hidden', !show);
+  document.getElementById(`${field}-error`)
+          .classList.toggle('hidden', !show);
 }
