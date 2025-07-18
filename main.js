@@ -178,31 +178,77 @@ function renderPagination() {
   const totalPages = Math.ceil(totalItems / PAGE_SIZE);
   if (totalPages < 2) return;
 
+  // remove any existing pager
+  const old = document.getElementById('pager');
+  if (old) old.remove();
+
   const pager = document.createElement('div');
   pager.id = 'pager';
   pager.className = 'my-4 flex justify-center items-center space-x-4';
 
+  // Prev button
   const prev = document.createElement('button');
-  prev.textContent = 'Prev'; prev.disabled = currentPage===1;
+  prev.textContent = 'Prev';
+  prev.disabled = currentPage === 1;
   prev.className = 'px-3 py-1 border rounded';
-  prev.onclick = () => { currentPage--; updateURL(); fetchAndRender(); };
-
-  const sel = document.createElement('select');
-  sel.className = 'p-1 border rounded';
-  for (let i=1;i<=totalPages;i++){
-    const o = new Option(`Page ${i}`,i);
-    if (i===currentPage) o.selected=true;
-    sel.add(o);
-  }
-  sel.onchange = () => {
-    currentPage = +sel.value;
-    updateURL(); fetchAndRender();
+  prev.onclick = () => {
+    currentPage--;
+    updateURL();
+    fetchAndRender();
   };
 
+  // Next button
   const next = document.createElement('button');
-  next.textContent = 'Next'; next.disabled = currentPage===totalPages;
+  next.textContent = 'Next';
+  next.disabled = currentPage === totalPages;
   next.className = 'px-3 py-1 border rounded';
-  next.onclick = () => { currentPage++; updateURL(); fetchAndRender(); };
+  next.onclick = () => {
+    currentPage++;
+    updateURL();
+    fetchAndRender();
+  };
+
+  // Page selector with windowing
+  const sel = document.createElement('select');
+  sel.className = 'p-1 border rounded';
+
+  // determine window bounds
+  const windowSize = 7;
+  let start = Math.max(1, currentPage - Math.floor(windowSize / 2));
+  let end = Math.min(totalPages, start + windowSize - 1);
+  // if we’re at the tail end, shift window backwards
+  if (end - start < windowSize - 1) {
+    start = Math.max(1, end - windowSize + 1);
+  }
+
+  // optional “go to first page” and leading ellipsis
+  if (start > 1) {
+    sel.add(new Option('« 1', 1));
+    if (start > 2) {
+      sel.add(new Option('…', start - 1));
+    }
+  }
+
+  // actual page options
+  for (let i = start; i <= end; i++) {
+    const o = new Option(`Page ${i}`, i);
+    if (i === currentPage) o.selected = true;
+    sel.add(o);
+  }
+
+  // optional trailing ellipsis and “go to last page”
+  if (end < totalPages) {
+    if (end < totalPages - 1) {
+      sel.add(new Option('…', end + 1));
+    }
+    sel.add(new Option(`› ${totalPages}`, totalPages));
+  }
+
+  sel.onchange = () => {
+    currentPage = Number(sel.value);
+    updateURL();
+    fetchAndRender();
+  };
 
   pager.append(prev, sel, next);
   document.getElementById('results').after(pager);
