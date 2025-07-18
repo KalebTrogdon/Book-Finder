@@ -1,33 +1,103 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 :root {
-  --color-navy: #1B2A41;
+  --color-navy:  #1B2A41;
   --color-beige: #F5F3E7;
   --color-brown: #8C5E3C;
-  --color-gold: #C8B06E;
+  --color-gold:  #C8B06E;
   --color-white: #FFFFFF;
+  --font-sans: 'Inter', sans-serif;
 }
 
-body {
-  font-family: 'Inter', sans-serif;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: var(--color-white);
+  color: var(--color-navy);
+  font-family: var(--font-sans);
+}
+
+html[data-theme="dark"] {
   background-color: var(--color-navy);
   color: var(--color-beige);
 }
 
-/* Input fields, cards, dropdowns */
-input,
-select,
-.book-card {
-  background-color: var(--color-beige);
-  color: var(--color-navy);
-  border: 1px solid var(--color-gold);
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
 }
 
-/* Buttons */
+.hidden { display: none !important; }
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap; border: 0;
+}
+
+nav.nav {
+  width: 100%;
+  max-width: 768px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+header.header {
+  width: 100%;
+  max-width: 768px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+footer {
+  margin-top: auto;
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
+
+form#search-form {
+  width: 100%;
+  max-width: 768px;
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+#search-input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid var(--color-gold);
+  border-radius: 4px 0 0 4px;
+  font: inherit;
+}
+
+#search-btn,
+#clear-search {
+  padding: 0.75rem 1.5rem;
+  font: inherit;
+  border: 1px solid var(--color-gold);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
 #search-btn {
   background-color: var(--color-brown);
   color: var(--color-white);
-  border: none;
+  border-radius: 0 4px 4px 0;
 }
 
 #search-btn:hover {
@@ -35,72 +105,122 @@ select,
   color: var(--color-navy);
 }
 
-#dark-toggle {
-  cursor: pointer;
-  background-color: var(--color-brown);
-  color: var(--color-white);
-  border: none;
-  transition: background-color 0.2s ease-in-out;
+#clear-search {
+  background-color: gray;
+  color: white;
+  border-radius: 4px;
 }
 
-#dark-toggle:hover {
-  background-color: var(--color-gold);
-  color: var(--color-navy);
+#clear-search:hover {
+  background-color: darkgray;
 }
 
-/* Card hover */
-.book-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+#filter-controls {
+  width: 100%;
+  max-width: 768px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
   padding: 1rem;
-  border-radius: 0.5rem;
+  background-color: var(--color-beige);
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+}
+
+.filter-group {
+  position: relative;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.filter-group input,
+.filter-group select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--color-gold);
+  border-radius: 4px;
+  font: inherit;
+}
+
+.filter-group button.clear-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: red;
+  cursor: pointer;
+}
+
+#results {
+  width: 100%;
+  max-width: 768px;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.book-card {
+  background-color: var(--color-beige);
+  color: var(--color-navy);
+  border: 1px solid var(--color-gold);
+  padding: 1rem;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.book-card img {
+  width: 100%;
+  height: 12rem;
+  object-fit: cover;
+  margin-bottom: 0.75rem;
 }
 
 .book-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
 }
 
-/* Focus styles */
-input:focus,
-select:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(200, 176, 110, 0.4);
-  /* gold ring */
+.book-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
 }
 
-/* Fade-in animation */
+.book-card p {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+}
+
 .fade-in {
   animation: fadeIn 0.4s ease-out;
 }
-
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Optional dark mode override */
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: var(--color-navy);
-    color: var(--color-beige);
+@media (min-width: 640px) {
+  #filter-controls {
+    grid-template-columns: repeat(4, 1fr);
   }
 
-  input,
-  select {
-    background-color: var(--color-beige);
-    color: var(--color-navy);
-    border-color: var(--color-gold);
+
+  #results {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .book-card {
-    background-color: var(--color-beige);
-    border-color: var(--color-gold);
+
+  header.header {
+    flex-direction: row;
+  }
+
+  form#search-form {
+    flex-direction: row;
   }
 }
