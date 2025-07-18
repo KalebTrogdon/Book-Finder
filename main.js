@@ -102,7 +102,6 @@ async function fetchAndRender() {
     const start = (currentPage-1)*PAGE_SIZE;
     const url   = `${BASE_URL}?q=${encodeURIComponent(q)}`
                 + `&startIndex=${start}&maxResults=${PAGE_SIZE}`
-                + `&key=${API_KEY}`;
     const res   = await fetch(url);
     if (!res.ok) throw new Error(res.statusText);
     const data  = await res.json();
