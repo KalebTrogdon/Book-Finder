@@ -5,20 +5,24 @@ let currentPage = 1;
 let totalItems = 0;
 let currentItems = [];
 
-function initApp() {
+// On DOM ready, initialize app
+document.addEventListener('DOMContentLoaded', () => {
   initDarkMode();
   loadStateFromURL();
   loadPersistedQuery();
   attachEventHandlers();
-  if (document.getElementById('search-input').value.trim()) {
+
+  // If there's a query in the input, perform search
+  const q = document.getElementById('search-input').value.trim();
+  if (q) {
     fetchPage(currentPage);
   }
 });
 
-// Dark mode toggle
+// Toggle dark/light mode and persist preference
 function initDarkMode() {
   const toggle = document.getElementById('dark-toggle');
-  const stored = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const stored = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   if (stored === 'dark') document.documentElement.classList.add('dark');
   toggle.setAttribute('aria-pressed', document.documentElement.classList.contains('dark'));
   toggle.addEventListener('click', () => {
@@ -28,12 +32,12 @@ function initDarkMode() {
   });
 }
 
-// Read URL params
+// Read search/filter/sort state from URL params
 function loadStateFromURL() {
   const params = new URLSearchParams(window.location.search);
   const q = params.get('q');
   if (q) document.getElementById('search-input').value = q;
-  ['title','author','genre'].forEach(key => {
+  ['title', 'author', 'genre'].forEach(key => {
     const val = params.get(key);
     if (val) document.getElementById(`filter-${key}`).value = val;
   });
@@ -43,7 +47,7 @@ function loadStateFromURL() {
   if (page > 1) currentPage = page;
 }
 
-// Persist last query
+// Persist last search query in localStorage
 function loadPersistedQuery() {
   const last = localStorage.getItem('lastQuery');
   const input = document.getElementById('search-input');
@@ -53,7 +57,7 @@ function persistQuery(q) {
   localStorage.setItem('lastQuery', q);
 }
 
-// Event handlers
+// Attach handlers for form, clear, filters, sort
 function attachEventHandlers() {
   const form = document.getElementById('search-form');
   const clearAll = document.getElementById('clear-search');
@@ -97,14 +101,14 @@ function attachEventHandlers() {
   });
 }
 
-// Update URL
+// Update URL to reflect current state without reloading
 function updateURL() {
   const params = new URLSearchParams();
   const q = document.getElementById('search-input').value.trim();
   if (q) params.set('q', q);
   ['title','author','genre'].forEach(key => {
-    const v = document.getElementById(`filter-${key}`).value.trim();
-    if (v) params.set(key, v);
+    const val = document.getElementById(`filter-${key}`).value.trim();
+    if (val) params.set(key, val);
   });
   const sort = document.getElementById('sort-by').value;
   if (sort) params.set('sort', sort);
@@ -112,116 +116,9 @@ function updateURL() {
   history.replaceState(null, '', `${window.location.pathname}?${params}`);
 }
 
-// Fetch API
+// Fetch a page of books from Google Books API
 async function fetchPage(page) {
   const query = document.getElementById('search-input').value.trim();
   const startIndex = (page - 1) * PAGE_SIZE;
   const url = `${BASE_URL}?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=${PAGE_SIZE}&key=${API_KEY}`;
-  const resultsContainer = document.getElementById('results');
-  resultsContainer.innerHTML = '<p class="text-center">Loading...</p>';
-  removePager();
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(res.statusText);
-    const data = await res.json();
-    currentItems = data.items || [];
-    totalItems = data.totalItems || 0;
-    renderBooks(sorted(applyFilters(currentItems)));
-    renderPagination();
-  } catch (err) {
-    resultsContainer.innerHTML = `<p class="text-center text-red-600">Error: ${err.message}</p>`;
-  }
-}
 
-// Filters
-function applyFilters(items) {
-  const t = document.getElementById('filter-title').value.trim().toLowerCase();
-  const a = document.getElementById('filter-author').value.trim().toLowerCase();
-  const g = document.getElementById('filter-genre').value.trim().toLowerCase();
-  return items.filter(item => {
-    const info = item.volumeInfo || {};
-    const title = (info.title || '').toLowerCase();
-    const authors = (info.authors || []).join(', ').toLowerCase();
-    const genres = (info.categories || []).join(', ').toLowerCase();
-    return (!t || title.includes(t)) && (!a || authors.includes(a)) && (!g || genres.includes(g));
-  });
-}
-
-// Sorting
-function sorted(items) {
-  const key = document.getElementById('sort-by').value;
-  if (!key) return items;
-  return [...items].sort((a, b) => {
-    const ia = a.volumeInfo || {};
-    const ib = b.volumeInfo || {};
-    const va = key === 'author'
-      ? (ia.authors || [''])[0].toLowerCase()
-      : (ia[key] || '').toLowerCase();
-    const vb = key === 'author'
-      ? (ib.authors || [''])[0].toLowerCase()
-      : (ib[key] || '').toLowerCase();
-    return va.localeCompare(vb);
-  });
-}
-
-// Render books
-function renderBooks(items) {
-  const container = document.getElementById('results');
-  container.innerHTML = '';
-  if (!items.length) {
-    container.innerHTML = '<p class="text-center">No books found.</p>';
-    return;
-  }
-  items.forEach(item => {
-    const info = item.volumeInfo || {};
-    const img = info.imageLinks?.thumbnail || '';
-    const desc = info.description
-      ? info.description.replace(/<[^>]+>/g, '').slice(0,150) + '…'
-      : 'No description available.';
-    const card = document.createElement('div');
-    card.className = 'book-card fade-in';
-    card.innerHTML = `
-      <img src="${img}" alt="Cover of ${info.title||'Untitled'}" />
-      <h2>${info.title||'Untitled'}</h2>
-      <p>${(info.authors||[]).join(', ')}</p>
-      <p class="small">${info.publishedDate||''}</p>
-      <p>${(info.categories||[]).join(', ')}</p>
-      <p class="desc">${desc}</p>
-    `;
-    container.appendChild(card);
-  });
-}
-
-// Pagination with dropdown
-function renderPagination() {
-  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
-  if (totalPages < 2) return;
-  const resultsContainer = document.getElementById('results');
-  const pager = document.createElement('div');
-  pager.id = 'pager';
-  pager.className = 'mt-4 flex justify-center items-center space-x-4';
-
-  const prev = document.createElement('button');
-  prev.id = 'prev'; prev.textContent = 'Prev'; prev.disabled = currentPage===1;
-  prev.className = 'px-3 py-1 border rounded';
-  prev.addEventListener('click', () => { if(currentPage>1){ currentPage--; updateURL(); fetchPage(currentPage);} });
-
-  const select = document.createElement('select');
-  select.id = 'page-select'; select.className = 'p-1 border rounded';
-  for(let i=1;i<=totalPages;i++){ const opt=document.createElement('option'); opt.value=i; opt.text=`Page ${i}`; if(i===currentPage) opt.selected=true; select.appendChild(opt); }
-  select.addEventListener('change', ()=>{ currentPage=parseInt(select.value); updateURL(); fetchPage(currentPage);} );
-
-  const next = document.createElement('button');
-  next.id='next'; next.textContent='Next'; next.disabled=currentPage===totalPages;
-  next.className='px-3 py-1 border rounded';
-  next.addEventListener('click', ()=>{ if(currentPage<totalPages){ currentPage++; updateURL(); fetchPage(currentPage);} });
-
-  pager.append(prev, select, next);
-  resultsContainer.after(pager);
-}
-
-// Remove old pagination
-function removePager() {
-  const old = document.getElementById('pager');
-  if(old) old.remove();
-}
