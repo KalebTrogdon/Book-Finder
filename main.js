@@ -17,7 +17,7 @@ function initApp() {
   if (q) {
     fetchPage(currentPage);
   }
-});
+}
 document.addEventListener('DOMContentLoaded', initApp);
 
 // Toggle dark/light mode and persist preference
