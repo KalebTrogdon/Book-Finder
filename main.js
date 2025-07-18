@@ -6,7 +6,7 @@ let totalItems = 0;
 let currentItems = [];
 
 // On DOM ready, initialize app
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
   initDarkMode();
   loadStateFromURL();
   loadPersistedQuery();
@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchPage(currentPage);
   }
 }
+
+document.addEventListener('DOMContentLoaded', initApp);
 
 // Toggle dark/light mode and persist preference
 function initDarkMode() {
