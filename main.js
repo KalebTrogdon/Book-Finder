@@ -1,4 +1,3 @@
-// main.js
 import { fetchBooks }        from './api.js';
 import { getLastQuery, setLastQuery, readURLParams, writeURLParams, getTheme, setTheme } from './storage.js';
 import { renderBooks, renderPagination, clearResults, setPaginationState } from './ui.js';
