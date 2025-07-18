@@ -16,7 +16,6 @@ function initApp() {
   const q = document.getElementById('search-input').value.trim();
   if (q) fetchPage(currentPage);
 }
-
 document.addEventListener('DOMContentLoaded', initApp);
 
 // Toggle dark/light mode and persist preference
