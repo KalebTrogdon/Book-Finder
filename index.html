@@ -1,87 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Book Searcher</title>
   <link href="main.css" rel="stylesheet"/>
 </head>
-<body>
+<body data-theme="light">
 
-  <div class="container">
+  <!-- page switch -->
+  <nav class="nav">
+    <label for="page-nav" class="sr-only">Go to</label>
+    <select id="page-nav">
+      <option value="index.html">Search Books</option>
+      <option value="contact.html">Contact Us</option>
+    </select>
+  </nav>
 
-    <!-- Navigation Dropdown -->
-    <nav class="app-nav">
-      <label for="page-nav" class="sr-only">Go to</label>
-      <select id="page-nav">
-        <option value="index.html" selected>Search Books</option>
-        <option value="contact.html">Contact Us</option>
-      </select>
-    </nav>
+  <!-- header -->
+  <header class="header">
+    <h1>📚 Book Searcher</h1>
+    <button id="dark-toggle" aria-pressed="false">Toggle Theme</button>
+  </header>
 
-    <!-- Header -->
-    <header class="app-header">
-      <h1>📚 Book Searcher</h1>
-      <button id="dark-toggle" aria-pressed="false">Toggle Theme</button>
-    </header>
+  <!-- search -->
+  <main>
+    <form id="search-form">
+      <input type="text" id="search-input" name="q"
+             placeholder="Search title, author, ISBN"
+             required minlength="2"/>
+      <button type="submit" id="search-btn">Search</button>
+      <button type="button" id="clear-search">Clear All</button>
+    </form>
 
-    <!-- Main Content -->
-    <main>
-
-      <!-- Search Form -->
-      <form id="search-form" class="search-form">
-        <input
-          type="text"
-          id="search-input"
-          name="q"
-          placeholder="Search by title, author, or ISBN"
-          required
-          minlength="2"
-        />
-        <button type="submit" id="search-btn">Search</button>
-        <button type="button" id="clear-search">Clear All</button>
-      </form>
-
-      <!-- Filter / Sort Controls -->
-      <div id="filter-controls">
-        <div class="filter-group">
-          <label for="sort-by">Sort By</label>
-          <select id="sort-by">
-            <option value="">None</option>
-            <option value="title">Title</option>
-            <option value="author">Author</option>
-            <option value="genre">Genre</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label for="filter-title">Filter Title</label>
-          <input type="text" id="filter-title" placeholder="Title" />
-          <button type="button" class="clear-btn" data-clear="filter-title">×</button>
-        </div>
-        <div class="filter-group">
-          <label for="filter-author">Filter Author</label>
-          <input type="text" id="filter-author" placeholder="Author" />
-          <button type="button" class="clear-btn" data-clear="filter-author">×</button>
-        </div>
-        <div class="filter-group">
-          <label for="filter-genre">Filter Genre</label>
-          <input type="text" id="filter-genre" placeholder="Genre" />
-          <button type="button" class="clear-btn" data-clear="filter-genre">×</button>
-        </div>
+    <!-- filters -->
+    <div id="filter-controls">
+      <div class="filter-group">
+        <label for="sort-by">Sort By</label>
+        <select id="sort-by">
+          <option value="">None</option>
+          <option value="title">Title</option>
+          <option value="author">Author</option>
+          <option value="genre">Genre</option>
+        </select>
       </div>
 
-      <!-- Results Container -->
-      <div id="results"></div>
-    </main>
+      <div class="filter-group">
+        <label for="filter-title">Filter Title</label>
+        <input id="filter-title" placeholder="Title"/>
+        <button class="clear-btn" data-clear="filter-title">×</button>
+      </div>
 
-    <!-- Footer -->
-    <footer class="app-footer">
-      © 2025 Book Searcher. Powered by Google Books API.
-    </footer>
+      <div class="filter-group">
+        <label for="filter-author">Filter Author</label>
+        <input id="filter-author" placeholder="Author"/>
+        <button class="clear-btn" data-clear="filter-author">×</button>
+      </div>
 
-  </div>
+      <div class="filter-group">
+        <label for="filter-genre">Filter Genre</label>
+        <input id="filter-genre" placeholder="Genre"/>
+        <button class="clear-btn" data-clear="filter-genre">×</button>
+      </div>
+    </div>
 
-  <script src="js/main.js" type="module"></script>
+    <!-- results -->
+    <div id="results"></div>
+  </main>
+
+  <footer>© 2025 Book Searcher. Powered by Google Books API.</footer>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
-
