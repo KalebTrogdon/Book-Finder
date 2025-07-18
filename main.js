@@ -180,7 +180,10 @@ function renderBooks(items) {
   }
   items.forEach(item => {
     const info = item.volumeInfo || {};
-    const img = info.imageLinks?.thumbnail || '';
+    let img = info.imageLinks?.thumbnail || '';
+    if (img.startsWith('http://')) {
+      img = img.replace(/^http:\/\//, 'https://');
+    }
     const desc = info.description
       ? info.description.replace(/<[^>]+>/g,'').slice(0,150) + '…'
       : 'No description available.';
