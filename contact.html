@@ -1,47 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact Us - Book Searcher</title>
-  <link href="main.css" rel="stylesheet">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Us</title>
+  <link href="main.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com" defer></script>
 </head>
-<body class="min-h-screen bg-[#1B2A41] text-[#F5F3E7] font-inter p-8">
-    <!-- Header -->
-    <header class="w-full max-w-4xl mb-10 flex justify-between items-center">
-        <h1 class="text-4xl font-bold text-[#F5F3E7]">📚 Book Searcher</h1>
-        <nav class="space-x-4">
-            <a href="index.html" class="text-sm hover:underline">Home</a>
-            <a href="contact.html" class="text-sm hover:underline">Contact Us</a>   
-            <button id="dark-toggle" class="text-sm font-medium px-4 py-2 rounded-md shadow-sm border transition" aria-pressed="false" >Toggle Dark Mode</button>
-        </nav>
-    </header>
+<body class="min-h-screen flex flex-col items-center p-6 sm:p-10 font-inter">
+  <nav class="w-full max-w-4xl mb-6 flex justify-end">
+    <select id="page-nav" class="p-2 border border-gray-300 rounded">
+      <option value="index.html">Home</option>
+      <option value="contact.html" selected>Contact Us</option>
+    </select>
+  </nav>
 
-  <main class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow fade-in">
-    <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Contact Us</h2>
-    <form id="contact-form" novalidate class="space-y-4">
-      <div>
-        <label for="contact-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name<span class="text-red-500">*</span></label>
-        <input type="text" id="contact-name" required aria-required="true"
-          class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#C8B06E] bg-[#F5F3E7] text-[#1B2A41]" />
-        <p id="error-name" class="mt-1 text-red-600 text-sm hidden">Please enter your name.</p>
+  <header class="w-full max-w-4xl mb-6">
+    <h1 class="text-4xl font-bold text-[#F5F3E7]">✉️ Contact Us</h1>
+  </header>
+
+  <main class="w-full max-w-4xl bg-white p-6 rounded shadow-md">
+    <form id="contact-form" novalidate>
+      <div class="mb-4">
+        <label for="name" class="block font-semibold">Name *</label>
+        <input type="text" id="name" required minlength="2"
+               class="w-full p-2 border rounded focus:ring-[#C8B06E]"/>
+        <p id="name-error" class="text-red-600 text-sm hidden">Please enter at least 2 characters.</p>
       </div>
-      <div>
-        <label for="contact-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email<span class="text-red-500">*</span></label>
-        <input type="email" id="contact-email" required aria-required="true"
-          class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#C8B06E] bg-[#F5F3E7] text-[#1B2A41]" />
-        <p id="error-email" class="mt-1 text-red-600 text-sm hidden">Please enter a valid email address.</p>
+      <div class="mb-4">
+        <label for="email" class="block font-semibold">Email *</label>
+        <input type="email" id="email" required
+               class="w-full p-2 border rounded focus:ring-[#C8B06E]"/>
+        <p id="email-error" class="text-red-600 text-sm hidden">Enter a valid email address.</p>
       </div>
-      <div>
-        <label for="contact-message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message<span class="text-red-500">*</span></label>
-        <textarea id="contact-message" rows="4" required aria-required="true" minlength="10"
-          class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#C8B06E] bg-[#F5F3E7] text-[#1B2A41]"></textarea>
-        <p id="error-message" class="mt-1 text-red-600 text-sm hidden">Message must be at least 10 characters.</p>
+      <div class="mb-4">
+        <label for="subject" class="block font-semibold">Subject</label>
+        <select id="subject" class="w-full p-2 border rounded">
+          <option value="">General</option>
+          <option value="feedback">Feedback</option>
+          <option value="bug">Bug Report</option>
+          <option value="other">Other</option>
+        </select>
       </div>
-      <button type="submit" id="contact-submit"
-        class="bg-[#8C5E3C] text-white px-4 py-2 rounded hover:bg-[#C8B06E] transition">Send Message</button>
+      <div class="mb-4">
+        <label for="message" class="block font-semibold">Message *</label>
+        <textarea id="message" required minlength="10" rows="5"
+                  class="w-full p-2 border rounded focus:ring-[#C8B06E]"></textarea>
+        <p id="message-error" class="text-red-600 text-sm hidden">Please enter at least 10 characters.</p>
+      </div>
+      <button type="submit"
+              class="bg-[#8C5E3C] text-white px-6 py-2 rounded hover:bg-[#C8B06E] transition">
+        Send Message
+      </button>
+      <div id="contact-success" class="mt-4 text-green-600 opacity-0 transition-opacity duration-500">
+        Thanks! Your message has been saved.
+      </div>
     </form>
   </main>
+
+  <footer class="mt-12 text-sm text-gray-500 dark:text-gray-400">
+    © 2025 Book Searcher.
+  </footer>
 
   <script type="module" src="contact.js"></script>
 </body>
