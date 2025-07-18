@@ -22,8 +22,39 @@ html {
 }
 
 html[data-theme="dark"] {
-  background-color: var(--color-navy);
-  color: var(--color-beige);
+  --bg-page: var(--color-navy);
+  --fg-page: var(--color-beige);
+  --bg-panel: #162134;
+  --bg-card: #24324a;
+  --input-bg: #24324a;
+  --input-fg: var(--color-beige);
+  --border: var(--color-gold);
+}
+
+html[data-theme="dark"] body {
+  background-color: var(--bg-page);
+  color:            var(--fg-page);
+}
+
+html[data-theme="dark"] #filter-controls {
+  background-color: var(--bg-panel);
+}
+
+html[data-theme="dark"] .book-card {
+  background-color: var(--bg-card);
+  color:            var(--fg-page);
+  border-color:     var(--border);
+}
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] select {
+  background-color: var(--input-bg);
+  color:            var(--input-fg);
+  border-color:     var(--border);
+}
+
+html[data-theme="dark"] #search-btn {
+  background-color: var(--color-brown);
 }
 
 body {
