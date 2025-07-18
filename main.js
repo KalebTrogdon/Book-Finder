@@ -13,11 +13,9 @@ function initApp() {
   if (document.getElementById('search-input').value.trim()) {
     fetchPage(currentPage);
   }
-}
+});
 
-document.addEventListener('DOMContentLoaded', initApp);
-
-// Initialize dark/light mode based on localStorage or system
+// Dark mode toggle
 function initDarkMode() {
   const toggle = document.getElementById('dark-toggle');
   const stored = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -30,7 +28,7 @@ function initDarkMode() {
   });
 }
 
-// Read and apply URL query parameters
+// Read URL params
 function loadStateFromURL() {
   const params = new URLSearchParams(window.location.search);
   const q = params.get('q');
@@ -42,21 +40,20 @@ function loadStateFromURL() {
   const sort = params.get('sort');
   if (sort) document.getElementById('sort-by').value = sort;
   const page = parseInt(params.get('page'), 10);
-  if (page && page > 1) currentPage = page;
+  if (page > 1) currentPage = page;
 }
 
-// Persist last search query to localStorage
+// Persist last query
 function loadPersistedQuery() {
   const last = localStorage.getItem('lastQuery');
   const input = document.getElementById('search-input');
   if (!input.value.trim() && last) input.value = last;
 }
-
 function persistQuery(q) {
   localStorage.setItem('lastQuery', q);
 }
 
-// Set up all event handlers
+// Event handlers
 function attachEventHandlers() {
   const form = document.getElementById('search-form');
   const clearAll = document.getElementById('clear-search');
@@ -74,7 +71,7 @@ function attachEventHandlers() {
   clearAll.addEventListener('click', () => {
     document.querySelectorAll('input,select').forEach(el => el.value = '');
     document.getElementById('results').innerHTML = '';
-    removePagination();
+    removePager();
     history.replaceState(null, '', window.location.pathname);
   });
 
@@ -100,7 +97,7 @@ function attachEventHandlers() {
   });
 }
 
-// Update browser URL without reload
+// Update URL
 function updateURL() {
   const params = new URLSearchParams();
   const q = document.getElementById('search-input').value.trim();
@@ -115,15 +112,14 @@ function updateURL() {
   history.replaceState(null, '', `${window.location.pathname}?${params}`);
 }
 
-// Fetch a page of results from Google Books API
+// Fetch API
 async function fetchPage(page) {
   const query = document.getElementById('search-input').value.trim();
   const startIndex = (page - 1) * PAGE_SIZE;
   const url = `${BASE_URL}?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=${PAGE_SIZE}&key=${API_KEY}`;
   const resultsContainer = document.getElementById('results');
   resultsContainer.innerHTML = '<p class="text-center">Loading...</p>';
-  removePagination();
-
+  removePager();
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(res.statusText);
@@ -137,7 +133,7 @@ async function fetchPage(page) {
   }
 }
 
-// Filter logic
+// Filters
 function applyFilters(items) {
   const t = document.getElementById('filter-title').value.trim().toLowerCase();
   const a = document.getElementById('filter-author').value.trim().toLowerCase();
@@ -151,20 +147,24 @@ function applyFilters(items) {
   });
 }
 
-// Sort logic
+// Sorting
 function sorted(items) {
   const key = document.getElementById('sort-by').value;
   if (!key) return items;
   return [...items].sort((a, b) => {
     const ia = a.volumeInfo || {};
     const ib = b.volumeInfo || {};
-    const va = key === 'author' ? (ia.authors||[''])[0].toLowerCase() : (ia[key]||'').toLowerCase();
-    const vb = key === 'author' ? (ib.authors||[''])[0].toLowerCase() : (ib[key]||'').toLowerCase();
+    const va = key === 'author'
+      ? (ia.authors || [''])[0].toLowerCase()
+      : (ia[key] || '').toLowerCase();
+    const vb = key === 'author'
+      ? (ib.authors || [''])[0].toLowerCase()
+      : (ib[key] || '').toLowerCase();
     return va.localeCompare(vb);
   });
 }
 
-// Render books to DOM
+// Render books
 function renderBooks(items) {
   const container = document.getElementById('results');
   container.innerHTML = '';
@@ -175,11 +175,13 @@ function renderBooks(items) {
   items.forEach(item => {
     const info = item.volumeInfo || {};
     const img = info.imageLinks?.thumbnail || '';
-    const desc = info.description ? info.description.replace(/<[^>]+>/g,'').slice(0,150)+'…' : 'No description available.';
+    const desc = info.description
+      ? info.description.replace(/<[^>]+>/g, '').slice(0,150) + '…'
+      : 'No description available.';
     const card = document.createElement('div');
     card.className = 'book-card fade-in';
     card.innerHTML = `
-      <img src="${img}" alt="Cover" />
+      <img src="${img}" alt="Cover of ${info.title||'Untitled'}" />
       <h2>${info.title||'Untitled'}</h2>
       <p>${(info.authors||[]).join(', ')}</p>
       <p class="small">${info.publishedDate||''}</p>
@@ -190,7 +192,7 @@ function renderBooks(items) {
   });
 }
 
-// Pagination controls (with dropdown selection)
+// Pagination with dropdown
 function renderPagination() {
   const totalPages = Math.ceil(totalItems / PAGE_SIZE);
   if (totalPages < 2) return;
@@ -199,117 +201,27 @@ function renderPagination() {
   pager.id = 'pager';
   pager.className = 'mt-4 flex justify-center items-center space-x-4';
 
-  // Prev button
   const prev = document.createElement('button');
-  prev.id = 'prev';
-  prev.textContent = 'Prev';
-  prev.disabled = (currentPage === 1);
+  prev.id = 'prev'; prev.textContent = 'Prev'; prev.disabled = currentPage===1;
   prev.className = 'px-3 py-1 border rounded';
-  prev.addEventListener('click', () => {
-    if (currentPage > 1) {
-      currentPage--;
-      updateURL();
-      fetchPage(currentPage);
-    }
-  });
+  prev.addEventListener('click', () => { if(currentPage>1){ currentPage--; updateURL(); fetchPage(currentPage);} });
 
-  // Page selector dropdown
   const select = document.createElement('select');
-  select.id = 'page-select';
-  select.className = 'p-1 border rounded';
-  for (let i = 1; i <= totalPages; i++) {
-    const option = document.createElement('option');
-    option.value = i;
-    option.textContent = `Page ${i}`;
-    if (i === currentPage) option.selected = true;
-    select.appendChild(option);
-  }
-  select.addEventListener('change', () => {
-    currentPage = parseInt(select.value, 10);
-    updateURL();
-    fetchPage(currentPage);
-  });
+  select.id = 'page-select'; select.className = 'p-1 border rounded';
+  for(let i=1;i<=totalPages;i++){ const opt=document.createElement('option'); opt.value=i; opt.text=`Page ${i}`; if(i===currentPage) opt.selected=true; select.appendChild(opt); }
+  select.addEventListener('change', ()=>{ currentPage=parseInt(select.value); updateURL(); fetchPage(currentPage);} );
 
-  // Next button
   const next = document.createElement('button');
-  next.id = 'next';
-  next.textContent = 'Next';
-  next.disabled = (currentPage === totalPages);
-  next.className = 'px-3 py-1 border rounded';
-  next.addEventListener('click', () => {
-    if (currentPage < totalPages) {
-      currentPage++;
-      updateURL();
-      fetchPage(currentPage);
-    }
-  });
+  next.id='next'; next.textContent='Next'; next.disabled=currentPage===totalPages;
+  next.className='px-3 py-1 border rounded';
+  next.addEventListener('click', ()=>{ if(currentPage<totalPages){ currentPage++; updateURL(); fetchPage(currentPage);} });
 
-  // Assemble
-  pager.appendChild(prev);
-  pager.appendChild(select);
-  pager.appendChild(next);
+  pager.append(prev, select, next);
   resultsContainer.after(pager);
 }
 
-// Remove pager
-function removePagination() {
+// Remove old pagination
+function removePager() {
   const old = document.getElementById('pager');
-  if (old) old.remove();
+  if(old) old.remove();
 }
-function removePagination() {
-  const old = document.getElementById('pager');
-  if (old) old.remove();
-}
-
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact Us - Book Searcher</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { inter: ['Inter','sans-serif'] } } } };
-  </script>
-  <link href="main.css" rel="stylesheet">
-</head>
-<body class="min-h-screen bg-[#1B2A41] text-[#F5F3E7] font-inter p-8">
-
-  <header class="mb-8 flex justify-between items-center">
-    <h1 class="text-3xl font-bold">📚 Book Searcher</h1>
-    <nav>
-      <a href="index.html" class="text-sm hover:underline">Home</a>
-    </nav>
-  </header>
-
-  <main class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow fade-in">
-    <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Contact Us</h2>
-    <form id="contact-form" novalidate class="space-y-4">
-      <div>
-        <label for="contact-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name<span class="text-red-500">*</span></label>
-        <input type="text" id="contact-name" required aria-required="true"
-          class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#C8B06E] bg-[#F5F3E7] text-[#1B2A41]" />
-        <p id="error-name" class="mt-1 text-red-600 text-sm hidden">Please enter your name.</p>
-      </div>
-      <div>
-        <label for="contact-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email<span class="text-red-500">*</span></label>
-        <input type="email" id="contact-email" required aria-required="true"
-          class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#C8B06E] bg-[#F5F3E7] text-[#1B2A41]" />
-        <p id="error-email" class="mt-1 text-red-600 text-sm hidden">Please enter a valid email address.</p>
-      </div>
-      <div>
-        <label for="contact-message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message<span class="text-red-500">*</span></label>
-        <textarea id="contact-message" rows="4" required aria-required="true" minlength="10"
-          class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#C8B06E] bg-[#F5F3E7] text-[#1B2A41]"></textarea>
-        <p id="error-message" class="mt-1 text-red-600 text-sm hidden">Message must be at least 10 characters.</p>
-      </div>
-      <button type="submit" id="contact-submit"
-        class="bg-[#8C5E3C] text-white px-4 py-2 rounded hover:bg-[#C8B06E] transition">Send Message</button>
-    </form>
-  </main>
-
-  <script type="module" src="contact.js"></script>
-</body>
-</html>
