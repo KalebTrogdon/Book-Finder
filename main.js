@@ -29,15 +29,18 @@ function initNav() {
 function initDarkMode() {
   const btn    = document.getElementById('dark-toggle');
   const stored = localStorage.getItem('theme')
-                || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light');
-  if (stored==='dark') document.documentElement.classList.add('dark');
-  btn.setAttribute('aria-pressed', document.documentElement.classList.contains('dark'));
-  btn.onclick = () => {
-    const nowDark = document.documentElement.classList.toggle('dark');
-    btn.setAttribute('aria-pressed', nowDark);
-    localStorage.setItem('theme', nowDark?'dark':'light');
-  };
+                || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', stored);
+  btn.setAttribute('aria-pressed', stored === 'dark');
+  btn.addEventListener('click', () => {
+    const isCurrentlyDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const nextTheme = isCurrentlyDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', nextTheme);
+    btn.setAttribute('aria-pressed', nextTheme === 'dark');
+    localStorage.setItem('theme', nextTheme);
+  });
 }
+
 
 // SEARCH FORM + CLEAR ALL
 function initForm() {
