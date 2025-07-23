@@ -1,85 +1,85 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Book Searcher</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link 
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" 
-  rel="stylesheet" 
-  media="print" 
-  onload="this.media='all'">
-<noscript>
-  <link 
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" 
-    rel="stylesheet">
-</noscript>
-  <link href="main.css" rel="stylesheet"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Book Searcher</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"
+        media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    </noscript>
+    <link href="css/main.css" rel="stylesheet" />
 </head>
 
-  <!-- page switch -->
-  <nav class="nav">
-    <label for="page-nav" class="sr-only">Go to</label>
-    <select id="page-nav">
-      <option value="index.html">Search Books</option>
-      <option value="contact.html">Contact Us</option>
-    </select>
-  </nav>
+<body>
 
-  <!-- header -->
-  <header class="header">
-    <h1>📚 Book Searcher</h1>
-    <button id="dark-toggle" aria-pressed="false">Toggle Theme</button>
-  </header>
-
-  <!-- search -->
-  <main>
-    <form id="search-form">
-      <input type="text" id="search-input" name="q"
-             placeholder="Search title, author, ISBN"
-             required minlength="2"/>
-      <button type="submit" id="search-btn">Search</button>
-      <button type="button" id="clear-search">Clear All</button>
-    </form>
-
-    <!-- filters -->
-    <div id="filter-controls">
-      <div class="filter-group">
-        <label for="sort-by">Sort By</label>
-        <select id="sort-by">
-          <option value="">None</option>
-          <option value="title">Title</option>
-          <option value="author">Author</option>
-          <option value="genre">Genre</option>
+    <!-- page switch -->
+    <nav class="nav">
+        <label for="page-nav" class="sr-only">Go to</label>
+        <select id="page-nav" class="btn-like" aria-label="Go to page">
+            <option value="index.html">Search Books</option>
+            <option value="contact.html">Contact Us</option>
         </select>
-      </div>
+    </nav>
 
-      <div class="filter-group">
-        <label for="filter-title">Filter Title</label>
-        <input id="filter-title" placeholder="Title"/>
-        <button class="clear-btn" data-clear="filter-title">×</button>
-      </div>
+    <header class="header">
+        <h1>📚 Book Searcher</h1>
+        <button id="dark-toggle" class="btn-like" aria-pressed="false" aria-label="Toggle dark mode">
+            Toggle Theme
+        </button>
+    </header>
 
-      <div class="filter-group">
-        <label for="filter-author">Filter Author</label>
-        <input id="filter-author" placeholder="Author"/>
-        <button class="clear-btn" data-clear="filter-author">×</button>
-      </div>
 
-      <div class="filter-group">
-        <label for="filter-genre">Filter Genre</label>
-        <input id="filter-genre" placeholder="Genre"/>
-        <button class="clear-btn" data-clear="filter-genre">×</button>
-      </div>
-    </div>
+    <!-- search -->
+    <main>
+        <form id="search-form">
+            <input type="text" id="search-input" name="q" placeholder="Search title, author, ISBN" required
+                minlength="2" />
+            <button type="submit" id="search-btn">Search</button>
+            <button type="button" id="clear-search">Clear All</button>
+        </form>
 
-    <!-- results -->
-    <div id="results" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
-  </main>
+        <!-- filters -->
+        <div id="filter-controls">
+            <div class="filter-group">
+                <label for="sort-by">Sort By</label>
+                <select id="sort-by">
+                    <option value="">None</option>
+                    <option value="title">Title</option>
+                    <option value="author">Author</option>
+                    <option value="genre">Genre</option>
+                </select>
+            </div>
 
-  <footer>© 2025 Book Searcher. Powered by Google Books API.</footer>
-  <script type="module" src="main.js" defer></script>
+            <div class="filter-group">
+                <label for="filter-title">Filter Title</label>
+                <input id="filter-title" placeholder="Title" />
+                <button class="clear-btn" data-clear="filter-title">×</button>
+            </div>
+
+            <div class="filter-group">
+                <label for="filter-author">Filter Author</label>
+                <input id="filter-author" placeholder="Author" />
+                <button class="clear-btn" data-clear="filter-author">×</button>
+            </div>
+
+            <div class="filter-group">
+                <label for="filter-genre">Filter Genre</label>
+                <input id="filter-genre" placeholder="Genre" />
+                <button class="clear-btn" data-clear="filter-genre">×</button>
+            </div>
+        </div>
+
+        <!-- results -->
+        <div id="results" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+    </main>
+
+    <footer>© 2025 Book Searcher. Powered by Google Books API.</footer>
+    <script type="module" src="js/main.js" defer></script>
 </body>
+
 </html>
