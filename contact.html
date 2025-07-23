@@ -1,91 +1,91 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Contact Us – Book Searcher</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-    rel="stylesheet"
-    media="print"
-    onload="this.media='all'"/>
-  <noscript>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-      rel="stylesheet"/>
-  </noscript>
 
-  <!-- Your main stylesheet -->
-  <link href="main.css" rel="stylesheet"/>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Contact Us – Book Searcher</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"
+        media="print" onload="this.media='all'" />
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    </noscript>
+
+    <!-- Your main stylesheet -->
+    <link href="css/main.css" rel="stylesheet" />
 </head>
+
 <body>
 
-  <!-- page switch -->
-  <nav class="nav">
-    <label for="page-nav" class="sr-only">Go to</label>
-    <select id="page-nav">
-      <option value="index.html">Search Books</option>
-      <option value="contact.html" selected>Contact Us</option>
-    </select>
-  </nav>
-
-  <!-- header + dark toggle -->
-  <header class="header">
-    <h1>✉️ Contact Us</h1>
-    <button id="dark-toggle" aria-pressed="false">Toggle Theme</button>
-  </header>
-
-  <!-- contact form -->
-  <main>
-    <form id="contact-form" novalidate>
-      <div class="filter-group">
-        <label for="name">Name *</label>
-        <input type="text" id="name" required minlength="2"/>
-        <p id="name-error" class="text-red-600 text-sm hidden">
-          Please enter at least 2 characters.
-        </p>
-      </div>
-
-      <div class="filter-group">
-        <label for="email">Email *</label>
-        <input type="email" id="email" required/>
-        <p id="email-error" class="text-red-600 text-sm hidden">
-          Please enter a valid email.
-        </p>
-      </div>
-
-      <div class="filter-group">
-        <label for="subject">Subject</label>
-        <select id="subject">
-          <option value="">General</option>
-          <option value="feedback">Feedback</option>
-          <option value="bug">Bug Report</option>
-          <option value="other">Other</option>
+    <!-- page switch -->
+    <nav class="nav">
+        <label for="page-nav" class="sr-only">Go to</label>
+        <select id="page-nav" class="btn-like">
+            <option value="index.html">Search Books</option>
+            <option value="contact.html" selected>Contact Us</option>
         </select>
-      </div>
+    </nav>
 
-      <div class="filter-group">
-        <label for="message">Message *</label>
-        <textarea id="message" required minlength="10" rows="5"></textarea>
-        <p id="message-error" class="text-red-600 text-sm hidden">
-          Please enter at least 10 characters.
-        </p>
-      </div>
+    <!-- header + dark toggle -->
+    <header class="header">
+        <h1>✉️ Contact Us</h1>
+        <button id="dark-toggle" class="btn-like" aria-pressed="false" aria-label="Toggle dark mode">
+            Toggle Theme
+        </button>
+    </header>
 
-      <button type="submit" class="px-4 py-2 border rounded">
-        Send Message
-      </button>
+    <!-- contact form -->
+    <main>
+        <form id="contact-form" novalidate>
+            <div class="filter-group">
+                <label for="name">Name *</label>
+                <input type="text" id="name" required minlength="2" />
+                <p id="name-error" class="text-red-600 text-sm hidden">
+                    Please enter at least 2 characters.
+                </p>
+            </div>
 
-      <div id="contact-success" class="text-green-600 opacity-0 mt-2">
-        Thanks! Your message has been saved.
-      </div>
-    </form>
-  </main>
+            <div class="filter-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" required />
+                <p id="email-error" class="text-red-600 text-sm hidden">
+                    Please enter a valid email.
+                </p>
+            </div>
 
-  <footer>© 2025 Book Searcher.</footer>
-  <script type="module" src="main.js" defer></script>
-  <script type="module" src="contact.js" defer></script>
+            <div class="filter-group">
+                <label for="subject">Subject</label>
+                <select id="subject">
+                    <option value="">General</option>
+                    <option value="feedback">Feedback</option>
+                    <option value="bug">Bug Report</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="message">Message *</label>
+                <textarea id="message" required minlength="10" rows="5"></textarea>
+                <p id="message-error" class="text-red-600 text-sm hidden">
+                    Please enter at least 10 characters.
+                </p>
+            </div>
+
+            <button type="submit" class="px-4 py-2 border rounded">
+                Send Message
+            </button>
+
+            <div id="contact-success" class="text-green-600 opacity-0 mt-2">
+                Thanks! Your message has been saved.
+            </div>
+        </form>
+    </main>
+
+    <footer>© 2025 Book Searcher.</footer>
+    <script type="module" src="js/main.js" defer></script>
+    <script type="module" src="js/contact.js" defer></script>
 </body>
+
 </html>
